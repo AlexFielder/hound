@@ -14,7 +14,9 @@ const (
 	defaultPollEnabled           = true
 	defaultVcs                   = "git"
 	defaultBaseUrl               = "{url}/blob/master/{path}{anchor}"
+	defaultBaseUrlAzureDevops    = "{url}/?path=%2F{path}&version=GBmaster&line={anchor}"
 	defaultAnchor                = "#L{line}"
+	defaultAnchorAzureDevops     = "&line={line}"
 	defaultHealthChekURI         = "/healthz"
 )
 
