@@ -25,6 +25,7 @@ $(GOPATH)/bin/hound: ui/bindata.go $(SRCS)
 	#GOPATH=`pwd`/.build go get github.com/jteeuwen/go-bindata/...
 
 ui/bindata.go: $(GOPATH)/bin/go-bindata.exe node_modules $(wildcard ui/assets/**/*)
+	mkdir .build\ui
 	rsync -r ui/assets/* .build/ui
 	npx webpack $(WEBPACK_ARGS)
 	$< -o $@ -pkg ui -prefix .build/ui -nomemcopy .build/ui/...
