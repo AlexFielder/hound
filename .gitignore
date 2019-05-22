@@ -5,3 +5,5 @@
 *.exe
 *.bak
 /.history
+cmds/houndd/data/
+cmds/houndd/config.json

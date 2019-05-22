@@ -3,12 +3,13 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/etsy/hound/config"
-	"github.com/etsy/hound/index"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/etsy/hound/config"
+	"github.com/etsy/hound/index"
 )
 
 type Response struct {
@@ -60,7 +61,7 @@ func repoNameFor(repos map[string]*config.Repo, repo string) string {
 		return repo
 	}
 
-	name := repoNameFromUrl(data.Url)
+	name := repoNameFromUrl(data.URL)
 	if name == "" {
 		return repo
 	}

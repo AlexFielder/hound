@@ -9,10 +9,10 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "remotePath": "${workspaceRoot}",
+            "remotePath": "C:\\Users\\alex.fielder\\go\\bin",
             "port": 6080,
             "host": "127.0.0.1",
-            "program": "${workspaceRoot}",
+            "program": "${workspaceFolder}\\cmds\\houndd",
             "env": {},
             "args": []
         },

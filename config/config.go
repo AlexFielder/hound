@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -13,24 +14,26 @@ const (
 	defaultPushEnabled           = false
 	defaultPollEnabled           = true
 	defaultVcs                   = "git"
-	defaultBaseUrl               = "{url}/blob/master/{path}{anchor}"
-	defaultBaseUrlAzureDevops    = "{url}/?path=%2F{path}&version=GBmaster&line={anchor}"
+	defaultBaseURL               = "{url}/blob/master/{path}{anchor}"
+	defaultBaseURLAzureDevops    = "{url}/?path=%2F{path}&version=GBmaster&line={anchor}"
 	defaultAnchor                = "#L{line}"
 	defaultAnchorAzureDevops     = "&line={line}"
 	defaultHealthChekURI         = "/healthz"
 )
 
-type UrlPattern struct {
-	BaseUrl string `json:"base-url"`
+//URLPattern ...
+type URLPattern struct {
+	BaseURL string `json:"base-url"`
 	Anchor  string `json:"anchor"`
 }
 
+//Repo ...
 type Repo struct {
-	Url               string         `json:"url"`
+	URL               string         `json:"url"`
 	MsBetweenPolls    int            `json:"ms-between-poll"`
 	Vcs               string         `json:"vcs"`
 	VcsConfigMessage  *SecretMessage `json:"vcs-config"`
-	UrlPattern        *UrlPattern    `json:"url-pattern"`
+	URLPattern        *URLPattern    `json:"url-pattern"`
 	ExcludeDotFiles   bool           `json:"exclude-dot-files"`
 	EnablePollUpdates *bool          `json:"enable-poll-updates"`
 	EnablePushUpdates *bool          `json:"enable-push-updates"`
@@ -45,16 +48,19 @@ func optionToBool(val *bool, def bool) bool {
 	return *val
 }
 
-// Are polling based updates enabled on this repo?
+//PollUpdatesEnabled ...
+//Are polling based updates enabled on this repo?
 func (r *Repo) PollUpdatesEnabled() bool {
 	return optionToBool(r.EnablePollUpdates, defaultPollEnabled)
 }
 
+//PushUpdatesEnabled ...
 // Are push based updates enabled on this repo?
 func (r *Repo) PushUpdatesEnabled() bool {
 	return optionToBool(r.EnablePushUpdates, defaultPushEnabled)
 }
 
+//Config ...
 type Config struct {
 	DbPath                string           `json:"dbpath"`
 	Repos                 map[string]*Repo `json:"repos"`
@@ -67,11 +73,13 @@ type Config struct {
 // is not marshalled into JSON and send to the UI.
 type SecretMessage []byte
 
+//MarshalJSON ...
 // This always marshals to an empty object.
 func (s *SecretMessage) MarshalJSON() ([]byte, error) {
 	return []byte("{}"), nil
 }
 
+//UnmarshalJSON ...
 // See http://golang.org/pkg/encoding/json/#RawMessage.UnmarshalJSON
 func (s *SecretMessage) UnmarshalJSON(b []byte) error {
 	if b == nil {
@@ -81,6 +89,7 @@ func (s *SecretMessage) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+//VcsConfig ...
 // Get the JSON encode vcs-config for this repo. This returns nil if
 // the repo doesn't declare a vcs-config.
 func (r *Repo) VcsConfig() []byte {
@@ -100,18 +109,26 @@ func initRepo(r *Repo) {
 		r.Vcs = defaultVcs
 	}
 
-	if r.UrlPattern == nil {
-		r.UrlPattern = &UrlPattern{
-			BaseUrl: defaultBaseUrl,
-			Anchor:  defaultAnchor,
-		}
-	} else {
-		if r.UrlPattern.BaseUrl == "" {
-			r.UrlPattern.BaseUrl = defaultBaseUrl
+	if r.URLPattern == nil {
+		if strings.Contains(r.URL, "visualstudio.com") {
+			r.URLPattern = &URLPattern{
+				BaseURL: defaultBaseURLAzureDevops,
+				Anchor:  defaultAnchorAzureDevops,
+			}
+		} else {
+			r.URLPattern = &URLPattern{
+				BaseURL: defaultBaseURL,
+				Anchor:  defaultAnchor,
+			}
 		}
 
-		if r.UrlPattern.Anchor == "" {
-			r.UrlPattern.Anchor = defaultAnchor
+	} else {
+		if r.URLPattern.BaseURL == "" {
+			r.URLPattern.BaseURL = defaultBaseURL
+		}
+
+		if r.URLPattern.Anchor == "" {
+			r.URLPattern.Anchor = defaultAnchor
 		}
 	}
 }
@@ -127,6 +144,7 @@ func initConfig(c *Config) {
 	}
 }
 
+//LoadFromFile ...
 func (c *Config) LoadFromFile(filename string) error {
 	r, err := os.Open(filename)
 	if err != nil {
@@ -156,7 +174,8 @@ func (c *Config) LoadFromFile(filename string) error {
 	return nil
 }
 
-func (c *Config) ToJsonString() (string, error) {
+//ToJSONString ...
+func (c *Config) ToJSONString() (string, error) {
 	b, err := json.Marshal(c.Repos)
 	if err != nil {
 		return "", err

@@ -36,4 +36,4 @@ test:
 	go test github.com/etsy/hound/...
 
 clean:
-	rm -rf .build node_modules
+	rmdir /s /q .build node_modules
