@@ -1,6 +1,6 @@
 # Hound
 
-[![Build Status](https://travis-ci.org/etsy/hound.svg?branch=master)](https://travis-ci.org/etsy/hound) [![Join the chat at https://gitter.im/etsy/Hound](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/etsy/Hound?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/hound-search/hound.svg?branch=master)](https://travis-ci.org/hound-search/hound) 
 
 Hound is an extremely fast source code search engine. The core is based on this article (and code) from Russ Cox:
 [Regular Expression Matching with a Trigram Index](http://swtch.com/~rsc/regexp/regexp4.html). Hound itself is a static
@@ -15,7 +15,7 @@ Hound is an extremely fast source code search engine. The core is based on this 
 1. Use the Go tools to install Hound. The binaries `houndd` (server) and `hound` (cli) will be installed in your $GOPATH.
 
 ```
-go get github.com/etsy/hound/cmds/...
+go get github.com/hound-search/hound/cmds/...
 ```
 
 2. Create a [config.json](config-example.json) in a directory with your list of repositories.
@@ -103,8 +103,8 @@ Go tools work accordingly. See [Setting GOPATH](https://github.com/golang/go/wik
 up your Go workspace. With a `GOPATH` set, the following commands will build hound locally.
 
 ```
-git clone https://github.com/etsy/hound.git ${GOPATH}/src/github.com/etsy/hound
-cd ${GOPATH}/src/github.com/etsy/hound
+git clone https://github.com/hound-search/hound.git ${GOPATH}/src/github.com/hound-search/hound
+cd ${GOPATH}/src/github.com/hound-search/hound
 make
 ```
 
