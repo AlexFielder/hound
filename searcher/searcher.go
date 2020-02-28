@@ -270,7 +270,7 @@ func hashFor(name string) string {
 
 // Create a normalized name for the vcs directory of this repo.
 func vcsDirFor(repo *config.Repo) string {
-	return fmt.Sprintf("vcs-%s", hashFor(repo.Url))
+	return fmt.Sprintf("vcs-%s", hashFor(repo.URL))
 }
 
 func init() {
@@ -355,10 +355,10 @@ func updateAndReindex(
 	defer lim.Release()
 
 	repo := s.Repo
-	newRev, err := wd.PullOrClone(vcsDir, repo.Url)
+	newRev, err := wd.PullOrClone(vcsDir, repo.URL)
 
 	if err != nil {
-		log.Printf("vcs pull error (%s - %s): %s", name, repo.Url, err)
+		log.Printf("vcs pull error (%s - %s): %s", name, repo.URL, err)
 		return rev, false
 	}
 
@@ -372,7 +372,7 @@ func updateAndReindex(
 		dbpath,
 		vcsDir,
 		nextIndexDir(dbpath),
-		repo.Url,
+		repo.URL,
 		newRev)
 	if err != nil {
 		log.Printf("failed index build (%s): %s", name, err)
@@ -412,13 +412,13 @@ func newSearcher(
 		SpecialFiles:    wd.SpecialFiles(),
 	}
 
-	rev, err := wd.PullOrClone(vcsDir, repo.Url)
+	rev, err := wd.PullOrClone(vcsDir, repo.URL)
 	if err != nil {
 		return nil, err
 	}
 
 	var idxDir string
-	ref := refs.find(repo.Url, rev)
+	ref := refs.find(repo.URL, rev)
 	if ref == nil {
 		idxDir = nextIndexDir(dbpath)
 	} else {
@@ -431,7 +431,7 @@ func newSearcher(
 		dbpath,
 		vcsDir,
 		idxDir,
-		repo.Url,
+		repo.URL,
 		rev)
 	if err != nil {
 		return nil, err

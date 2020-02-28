@@ -84,7 +84,7 @@ func renderForDev(w io.Writer, root string, c *content, cfg *config.Config, r *h
 		return errors.New("invalid tplType for content")
 	}
 
-	json, err := cfg.ToJsonString()
+	json, err := cfg.ToJSONString()
 	if err != nil {
 		return err
 	}
@@ -217,7 +217,7 @@ func newPrdHandler(cfg *config.Config) (http.Handler, error) {
 		}
 	}
 
-	json, err := cfg.ToJsonString()
+	json, err := cfg.ToJSONString()
 	if err != nil {
 		return nil, err
 	}
