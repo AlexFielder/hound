@@ -8,3 +8,4 @@
 cmds/houndd/data/
 cmds/houndd/config.json
 ui/bindata.go
+/.vscode
