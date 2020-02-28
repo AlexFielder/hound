@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/etsy/hound/config"
-	"github.com/etsy/hound/index"
-	"github.com/etsy/hound/vcs"
+	"github.com/hound-search/hound/config"
+	"github.com/hound-search/hound/index"
+	"github.com/hound-search/hound/vcs"
 )
 
 type Searcher struct {
@@ -53,6 +53,7 @@ type limiter chan bool
 type foundRefs struct {
 	refs    []*index.IndexRef
 	claimed map[*index.IndexRef]bool
+	lock    sync.Mutex
 }
 
 func makeLimiter(n int) limiter {
@@ -85,6 +86,9 @@ func (r *foundRefs) find(url, rev string) *index.IndexRef {
  * collected at the end of startup.
  */
 func (r *foundRefs) claim(ref *index.IndexRef) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
 	r.claimed[ref] = true
 }
 
@@ -93,6 +97,9 @@ func (r *foundRefs) claim(ref *index.IndexRef) {
  * found in the dbpath but were not claimed during startup.
  */
 func (r *foundRefs) removeUnclaimed() error {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
 	for _, ref := range r.refs {
 		if r.claimed[ref] {
 			continue
@@ -501,8 +508,8 @@ func newSearcherConcurrent(
 	s, err := newSearcher(dbpath, name, repo, refs, lim)
 	if err != nil {
 		resultCh <- searcherResult{
-			name:     name,
-			err:      err,
+			name: name,
+			err:  err,
 		}
 		return
 	}
