@@ -15,7 +15,7 @@ const (
 	defaultPollEnabled           = true
 	defaultTitle                 = "Hound"
 	defaultVcs                   = "git"
-	defaultBaseUrl               = "{url}/blob/{rev}/{path}{anchor}"
+	defaultBaseURL               = "{url}/blob/{rev}/{path}{anchor}"
 	defaultAnchor                = "#L{line}"
 	defaultHealthCheckURI        = "/healthz"
 	defaultAnchorAzureDevops     = "&line={line}"
@@ -114,7 +114,7 @@ func initRepo(r *Repo) {
 	if r.URLPattern == nil {
 		if strings.Contains(r.URL, "visualstudio.com") {
 			r.URLPattern = &URLPattern{
-				BaseURL: defaultBaseURLAzureDevops,
+				BaseURL: defaultBaseURL,
 				Anchor:  defaultAnchorAzureDevops,
 			}
 		} else {
