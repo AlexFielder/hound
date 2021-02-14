@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/blang/semver"
 	"github.com/hound-search/hound/api"
 	"github.com/hound-search/hound/config"
 	"github.com/hound-search/hound/searcher"
@@ -45,7 +47,7 @@ func makeSearchers(cfg *config.Config) (map[string]*searcher.Searcher, bool, err
 	if len(errs) > 0 {
 		// NOTE: This mutates the original config so the repos
 		// are not even seen by other code paths.
-		for name, _ := range errs {
+		for name, _ := range errs {  //nolint
 			delete(cfg.Repos, name)
 		}
 
@@ -77,7 +79,7 @@ func registerShutdownSignal() <-chan os.Signal {
 	return shutdownCh
 }
 
-func makeTemplateData(cfg *config.Config) (interface{}, error) {
+func makeTemplateData(cfg *config.Config) (interface{}, error) {  //nolint
 	var data struct {
 		ReposAsJson string
 	}
@@ -96,7 +98,7 @@ func makeTemplateData(cfg *config.Config) (interface{}, error) {
 	return &data, nil
 }
 
-func runHttp(
+func runHttp(  //nolint
 	addr string,
 	dev bool,
 	cfg *config.Config,
@@ -113,6 +115,14 @@ func runHttp(
 	return http.ListenAndServe(addr, m)
 }
 
+func getVersion() semver.Version {
+	return semver.Version{
+		Major: 0,
+		Minor: 3,
+		Patch: 0,
+	}
+}
+
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	info_log = log.New(os.Stdout, "", log.LstdFlags)
@@ -121,8 +131,14 @@ func main() {
 	flagConf := flag.String("conf", "config.json", "")
 	flagAddr := flag.String("addr", ":6080", "")
 	flagDev := flag.Bool("dev", false, "")
+	flagVer := flag.Bool("version", false, "Display version and exit")
 
 	flag.Parse()
+
+	if *flagVer {
+		fmt.Printf("houndd v%s", getVersion())
+		os.Exit(0)
+	}
 
 	var cfg config.Config
 	if err := cfg.LoadFromFile(*flagConf); err != nil {
@@ -164,7 +180,7 @@ func main() {
 		}
 	}
 
-	info_log.Printf("running server at http://%s...\n", host)
+	info_log.Printf("running server at http://%s\n", host)
 
 	// Fully enable the web server now that we have indexes
 	panic(ws.ServeWithIndex(idx))

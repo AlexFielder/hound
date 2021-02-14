@@ -35,6 +35,14 @@ dev: ALL
 
 test:
 	go test github.com/hound-search/hound/...
+	npm test
+
+lint:
+	export GO111MODULE=on
+	go get github.com/golangci/golangci-lint/cmd/golangci-lint
+	export GOPATH=/tmp/gopath
+	export PATH=$GOPATH/bin:$PATH
+	golangci-lint run ./...
 
 clean:
 	rmdir /s /q .build node_modules

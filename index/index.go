@@ -41,11 +41,12 @@ type IndexOptions struct {
 }
 
 type SearchOptions struct {
-	IgnoreCase     bool
-	LinesOfContext uint
-	FileRegexp     string
-	Offset         int
-	Limit          int
+	IgnoreCase        bool
+	LinesOfContext    uint
+	FileRegexp        string
+	ExcludeFileRegexp string
+	Offset            int
+	Limit             int
 }
 
 type Match struct {
@@ -167,6 +168,14 @@ func (n *Index) Search(pat string, opt *SearchOptions) (*SearchResponse, error) 
 		}
 	}
 
+	var excludeFre *regexp.Regexp
+	if opt.ExcludeFileRegexp != "" {
+		excludeFre, err = regexp.Compile(opt.ExcludeFileRegexp)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	files := n.idx.PostingQuery(index.RegexpQuery(re.Syntax))
 	for _, file := range files {
 		var matches []*Match
@@ -175,6 +184,11 @@ func (n *Index) Search(pat string, opt *SearchOptions) (*SearchResponse, error) 
 
 		// reject files that do not match the file pattern
 		if fre != nil && fre.MatchString(name, true, true) < 0 {
+			continue
+		}
+
+		// reject files that match the exclude file pattern
+		if excludeFre != nil && excludeFre.MatchString(name, true, true) > 0 {
 			continue
 		}
 
@@ -222,7 +236,7 @@ func (n *Index) Search(pat string, opt *SearchOptions) (*SearchResponse, error) 
 		Matches:        results,
 		FilesWithMatch: filesFound,
 		FilesOpened:    filesOpened,
-		Duration:       time.Now().Sub(startedAt),
+		Duration:       time.Now().Sub(startedAt),  //nolint
 		Revision:       n.Ref.Rev,
 	}, nil
 }
@@ -350,7 +364,7 @@ func indexAllFiles(opt *IndexOptions, dst, src string) error {
 	}
 	defer fileHandle.Close()
 
-	if err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {  //nolint
 		name := info.Name()
 		rel, err := filepath.Rel(src, path)
 		if err != nil {
