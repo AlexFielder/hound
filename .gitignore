@@ -3,20 +3,13 @@
 /node_modules
 .DS_Store
 *.exe
-<<<<<<< Updated upstream
-=======
 /db
 /data
 /.idea
 dist/
->>>>>>> Stashed changes
 *.bak
 /.history
 cmds/houndd/data/
 cmds/houndd/config.json
 ui/bindata.go
-<<<<<<< Updated upstream
 /.vscode
-=======
-/.vscode
->>>>>>> Stashed changes
