@@ -41,7 +41,7 @@ func repoNameFromUrl(uri string) string {
 	}
 
 	name := uri[ax+1:]
-	if strings.HasSuffix(name, ".git") {
+	if strings.HasSuffix(name, ".git") { //nolint
 		name = name[:len(name)-4]
 	}
 
@@ -61,7 +61,11 @@ func repoNameFor(repos map[string]*config.Repo, repo string) string {
 		return repo
 	}
 
-	name := repoNameFromUrl(data.URL)
+	if data.DisplayName != "" {
+		return data.DisplayName
+	}
+
+	name := repoNameFromUrl(data.Url)
 	if name == "" {
 		return repo
 	}
@@ -104,10 +108,10 @@ func Search(r *Response, cfg *Config, pattern, repos, files string, context int,
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("Status %d", res.StatusCode)
+		return fmt.Errorf("status %d", res.StatusCode)
 	}
 
 	return json.NewDecoder(res.Body).Decode(r)
@@ -119,7 +123,7 @@ func LoadRepos(repos map[string]*config.Repo, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 
 	return json.NewDecoder(res.Body).Decode(&repos)
 }
