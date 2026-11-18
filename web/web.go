@@ -26,7 +26,7 @@ type Server struct {
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == s.cfg.HealthCheckURI {
-		fmt.Fprintln(w, "👍")
+		_, _ = fmt.Fprintln(w, "👍")
 		return
 	}
 
@@ -77,7 +77,7 @@ func (s *Server) ServeWithIndex(idx map[string]*searcher.Searcher) error {
 
 	m := http.NewServeMux()
 	m.Handle("/", h)
-	api.Setup(m, idx)
+	api.Setup(m, idx, s.cfg.ResultLimit)
 
 	s.serveWith(m)
 
