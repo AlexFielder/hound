@@ -7,10 +7,11 @@
 /data
 /.idea
 dist/
+config.json
+/ui/.build
 *.bak
 /.history
 cmds/houndd/data/
 cmds/houndd/config.json
-ui/bindata.go
 /.vscode
 /nppBackup
